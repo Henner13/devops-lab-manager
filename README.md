@@ -1,20 +1,26 @@
 # DevOps Lab Manager
 
-Laboratorio DevOps basado en Docker, SSH, Ansible y GitHub Actions.
+Laboratorio DevOps para automatización de infraestructura.
 
 ## Tecnologías
 
 - Docker
 - Docker Compose
+- SSH
 - Python
 - Ansible
 - GitHub Actions
-- Prometheus
-- Grafana
 
-## Objetivos
+## Infraestructura
 
-- Automatizar la gestión de servidores
-- Implementar CI/CD
-- Practicar Infraestructura como Código
-- Desarrollar herramientas DevOps propias
+```text
+server1
+server2
+server3
+```
+
+## Levantar el entorno
+
+```bash
+docker compose up -d --build
+```

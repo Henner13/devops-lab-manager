@@ -6,6 +6,8 @@ services:
     hostname: server1
     ports:
       - "2221:22"
+    networks:
+      - devops-net
 
   server2:
     build: ./docker
@@ -13,6 +15,8 @@ services:
     hostname: server2
     ports:
       - "2222:22"
+    networks:
+      - devops-net
 
   server3:
     build: ./docker
@@ -20,3 +24,9 @@ services:
     hostname: server3
     ports:
       - "2223:22"
+    networks:
+      - devops-net
+
+networks:
+  devops-net:
+    driver: bridge
