@@ -42,3 +42,7 @@ jobs:
       - name: Validate Docker Compose
         run: |
           docker compose config
+      
+      - name: Test Labctl
+        run: |
+          python scripts/labctl.py help
