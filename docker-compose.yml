@@ -1,0 +1,22 @@
+services:
+
+  server1:
+    build: ./docker
+    container_name: server1
+    hostname: server1
+    ports:
+      - "2221:22"
+
+  server2:
+    build: ./docker
+    container_name: server2
+    hostname: server2
+    ports:
+      - "2222:22"
+
+  server3:
+    build: ./docker
+    container_name: server3
+    hostname: server3
+    ports:
+      - "2223:22"
