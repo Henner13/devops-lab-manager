@@ -1,5 +1,5 @@
 ---
-- name: Cofigurar claves SSH
+- name: Configurar claves SSH
   hosts: servers
   become: true
 
@@ -11,7 +11,7 @@
         owner: devops
         group: devops
         mode: '0700'
-      
+
     - name: Copiar clave pública
       authorized_key:
         user: devops

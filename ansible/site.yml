@@ -1,0 +1,9 @@
+---
+- name: Configuracion completa laboratorio
+  hosts: servers
+  become: true
+
+  roles:
+    - common
+    - nginx
+    - setup_ssh_keys

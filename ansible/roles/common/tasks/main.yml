@@ -1,0 +1,30 @@
+---
+
+- name: Actualizar cache apt
+  apt:
+    update_cache: yes
+
+- name: Instalar herramientas base
+  apt:
+    name:
+      - curl
+      - wget
+      - vim
+      - nano
+      - htop
+      - git
+      - unzip
+      - net-tools
+    state: present
+
+- name: Crear directorio proyectos
+  file:
+    path: /opt/projects
+    state: directory
+    mode: '0755'
+
+- name: Configurar sudo sin contraseña para devops
+  copy:
+    dest: /etc/sudoers.d/devops
+    content: "devops ALL=(ALL) NOPASSWD:ALL"
+    mode: '0440'

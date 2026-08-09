@@ -31,7 +31,8 @@ for index, server in enumerate(servers):
         f"{server} "
         f"ansible_host=localhost "
         f"ansible_port={port_base + index} "
-        f"ansible_user=devops\n"
+        f"ansible_user=devops "
+        f"ansible_ssh_private_key_file=~/.ssh/id_ed25519\n"
     )
 
 # Guardar archivo

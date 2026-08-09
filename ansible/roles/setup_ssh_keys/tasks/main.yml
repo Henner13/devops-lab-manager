@@ -1,0 +1,14 @@
+---
+- name: Crear directorio .ssh
+  file:
+    path: /home/devops/.ssh
+    state: directory
+    owner: devops
+    group: devops
+    mode: '0700'
+
+- name: Copiar clave pública
+  authorized_key:
+    user: devops
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_ed25519.pub') }}"
