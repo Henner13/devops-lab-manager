@@ -430,6 +430,8 @@ Disponible en:
 ```text
 http://localhost:3000
 ```
+Dashboard:
+En mi caso importe el Dashboard 1860
 
 Credenciales iniciales:
 
