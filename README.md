@@ -1,20 +1,23 @@
 # DevOps Lab Manager
 
-Laboratorio DevOps creado para practicar automatización, administración de sistemas e infraestructura como código utilizando Docker, Python y Ansible.
-
-## Objetivos
-
-- Automatizar la gestión de servidores Linux.
-- Practicar Infraestructura como Código (IaC).
-- Configurar servidores mediante Ansible.
-- Utilizar autenticación SSH por claves.
-- Crear herramientas propias de automatización.
-- Preparar una base para CI/CD con GitHub Actions.
-- Incorporar observabilidad y monitorización en futuras fases.
+Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, infraestructura como código (IaC), observabilidad y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
 
 ---
 
-## Arquitectura
+# Objetivos
+
+- Automatizar la gestión de servidores Linux.
+- Practicar Infraestructura como Código (IaC).
+- Configurar sistemas mediante Ansible.
+- Utilizar autenticación SSH basada en claves.
+- Crear herramientas propias de automatización.
+- Implementar integración continua con GitHub Actions.
+- Incorporar observabilidad y monitorización.
+- Aplicar buenas prácticas DevOps y DevSecOps.
+
+---
+
+# Arquitectura
 
 ```text
 Linux Mint
@@ -26,18 +29,27 @@ Linux Mint
 └── server3
         │
         ▼
-    Ansible
+      Ansible
         │
         ▼
  Dynamic Inventory
         │
         ▼
-      labctl
+       labctl
+        │
+        ▼
+ GitHub Actions CI
+        │
+        ▼
+ Monitoring Stack
+ ├── Prometheus
+ ├── Grafana
+ └── Node Exporter
 ```
 
 ---
 
-## Tecnologías utilizadas
+# Tecnologías utilizadas
 
 - Linux
 - Docker
@@ -47,14 +59,54 @@ Linux Mint
 - Ansible
 - Git
 - GitHub
+- GitHub Actions
+- Prometheus
+- Grafana
+- Node Exporter
 - YAML
 
 ---
 
-## Estructura del proyecto
+# Funcionalidades
+
+## Infraestructura
+
+- Laboratorio reproducible mediante Docker Compose.
+- Tres servidores Ubuntu accesibles por SSH.
+- Red Docker dedicada.
+- Configuración centralizada mediante Ansible.
+
+## Automatización
+
+- Inventario dinámico generado con Python.
+- Roles de Ansible reutilizables.
+- Despliegue automatizado de servicios.
+- Gestión centralizada mediante la herramienta `labctl`.
+
+## Observabilidad
+
+- Recolección de métricas mediante Node Exporter.
+- Almacenamiento de métricas en Prometheus.
+- Visualización mediante Grafana.
+
+## Integración Continua
+
+- Validación automática con GitHub Actions.
+- Verificación de sintaxis Python.
+- Verificación de Docker Compose.
+- Verificación de Ansible.
+- Validación de la CLI personalizada.
+
+---
+
+# Estructura del proyecto
 
 ```text
 devops-lab-manager/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 │
 ├── ansible/
 │   ├── group_vars/
@@ -73,6 +125,7 @@ devops-lab-manager/
 │   │       └── tasks/
 │   │           └── main.yml
 │   │
+│   ├── setup_ssh_keys.yml
 │   └── site.yml
 │
 ├── docker/
@@ -81,14 +134,15 @@ devops-lab-manager/
 ├── inventory/
 │   └── hosts.ini
 │
+├── monitoring/
+│   └── prometheus/
+│       └── prometheus.yml
+│
 ├── scripts/
 │   ├── generate_inventory.py
 │   └── labctl.py
 │
 ├── tests/
-│
-├── .github/
-│   └── workflows/
 │
 ├── docker-compose.yml
 ├── README.md
@@ -97,7 +151,7 @@ devops-lab-manager/
 
 ---
 
-## Requisitos
+# Requisitos
 
 - Linux Mint o cualquier distribución Linux moderna.
 - Docker.
@@ -108,9 +162,9 @@ devops-lab-manager/
 
 ---
 
-## Despliegue inicial
+# Despliegue inicial
 
-### Clonar el repositorio
+## Clonar el repositorio
 
 ```bash
 git clone https://github.com/TU-USUARIO/devops-lab-manager.git
@@ -118,7 +172,9 @@ git clone https://github.com/TU-USUARIO/devops-lab-manager.git
 cd devops-lab-manager
 ```
 
-### Levantar los servidores
+---
+
+## Levantar la infraestructura
 
 ```bash
 docker compose up -d --build
@@ -136,11 +192,14 @@ Resultado esperado:
 server1
 server2
 server3
+prometheus
+grafana
+node-exporter
 ```
 
 ---
 
-## Generar inventario dinámico
+# Generar inventario dinámico
 
 ```bash
 python3 scripts/generate_inventory.py
@@ -154,11 +213,11 @@ inventory/hosts.ini
 
 ---
 
-## Bootstrap inicial
+# Bootstrap inicial
 
-La primera vez es necesario utilizar autenticación mediante contraseña para configurar el entorno.
+La primera vez es necesario utilizar autenticación mediante contraseña para configurar el laboratorio.
 
-### Configurar claves SSH
+## Configurar claves SSH
 
 ```bash
 ansible-playbook \
@@ -173,7 +232,7 @@ Contraseña por defecto:
 devops123
 ```
 
-Parámetros:
+Parámetros utilizados:
 
 ```text
 -k = Solicitar contraseña SSH
@@ -182,7 +241,7 @@ Parámetros:
 
 ---
 
-### Aplicar configuración inicial
+## Aplicar configuración base
 
 ```bash
 ansible-playbook \
@@ -193,14 +252,14 @@ ansible/site.yml \
 
 Esta configuración:
 
-- Instala herramientas básicas.
+- Instala herramientas de administración.
 - Configura Nginx.
-- Configura sudo sin contraseña para el usuario devops.
-- Aplica la configuración común del laboratorio.
+- Configura sudo sin contraseña.
+- Despliega los roles del laboratorio.
 
 ---
 
-### Verificar sudo sin contraseña
+## Verificar sudo sin contraseña
 
 ```bash
 ssh devops@localhost -p 2221
@@ -218,21 +277,14 @@ root
 
 ---
 
-## Operación normal
+# Operación normal
 
-Una vez completado el bootstrap inicial ya no es necesario usar:
+Una vez completado el bootstrap:
 
-```bash
--k
-```
+- Ya no es necesario usar `-k`.
+- Ya no es necesario usar `-K`.
 
-ni:
-
-```bash
--K
-```
-
-Los despliegues posteriores pueden ejecutarse directamente:
+Despliegue normal:
 
 ```bash
 ansible-playbook \
@@ -240,7 +292,7 @@ ansible-playbook \
 ansible/site.yml
 ```
 
-o mediante:
+O mediante:
 
 ```bash
 python3 scripts/labctl.py deploy
@@ -248,49 +300,91 @@ python3 scripts/labctl.py deploy
 
 ---
 
-## Uso de labctl
+# Uso de labctl
 
-### Estado de los contenedores
+## Ver ayuda
+
+```bash
+python3 scripts/labctl.py help
+```
+
+## Levantar infraestructura
+
+```bash
+python3 scripts/labctl.py up
+```
+
+## Apagar infraestructura
+
+```bash
+python3 scripts/labctl.py down
+```
+
+## Reconstruir infraestructura
+
+```bash
+python3 scripts/labctl.py rebuild
+```
+
+## Mostrar contenedores
 
 ```bash
 python3 scripts/labctl.py status
 ```
 
-### Regenerar inventario
+## Generar inventario
 
 ```bash
 python3 scripts/labctl.py inventory
 ```
 
-### Probar conectividad Ansible
+## Comprobar conectividad Ansible
 
 ```bash
 python3 scripts/labctl.py ping
 ```
 
-### Ejecutar despliegue completo
+## Ejecutar despliegue
 
 ```bash
 python3 scripts/labctl.py deploy
 ```
 
+## Comprobar salud del laboratorio
+
+```bash
+python3 scripts/labctl.py health
+```
+
+## Ver logs
+
+```bash
+python3 scripts/labctl.py logs server1
+```
+
+## Mostrar URLs de monitorización
+
+```bash
+python3 scripts/labctl.py monitor
+```
+
 ---
 
-## Acceso a servidores
+# Acceso a servidores
 
-### Server 1
+## Server 1
 
 ```bash
 ssh devops@localhost -p 2221
 ```
 
-### Server 2
+## Server 2
 
 ```bash
 ssh devops@localhost -p 2222
 ```
 
-### Server 3
+## Server 3
 
 ```bash
 ssh devops@localhost -p 2223
@@ -298,9 +392,9 @@ ssh devops@localhost -p 2223
 
 ---
 
-## Roles de Ansible
+# Roles de Ansible
 
-### common
+## common
 
 Configura:
 
@@ -309,41 +403,98 @@ Configura:
 - Configuración común.
 - Sudo sin contraseña.
 
-### nginx
+## nginx
 
 Configura:
 
 - Instalación de Nginx.
 
-### setup_ssh_keys
+## setup_ssh_keys
 
 Configura:
 
 - Directorio `.ssh`.
 - Claves públicas autorizadas.
-- Acceso SSH por claves.
+- Acceso SSH mediante claves.
 
 ---
 
-## Seguridad
+# Monitorización
+
+## Prometheus
+
+Disponible en:
+
+```text
+http://localhost:9090
+```
+
+## Grafana
+
+Disponible en:
+
+```text
+http://localhost:3000
+```
+
+Credenciales iniciales:
+
+```text
+Usuario: admin
+Contraseña: admin
+```
+
+## Componentes monitorizados
+
+- CPU
+- Memoria
+- Disco
+- Red
+- Procesos
+- Uptime
+
+---
+
+# GitHub Actions
+
+El proyecto utiliza integración continua mediante GitHub Actions.
+
+Workflow:
+
+```text
+.github/workflows/ci.yml
+```
+
+## Validaciones realizadas
+
+- Validación de sintaxis Python.
+- Validación de Docker Compose.
+- Validación de playbooks Ansible.
+- Validación de la CLI `labctl`.
+
+---
+
+# Seguridad
 
 Actualmente el laboratorio utiliza:
 
 - Claves SSH Ed25519.
 - Usuario dedicado `devops`.
-- Sudo sin contraseña para facilitar la automatización.
+- Sudo sin contraseña para automatización.
+- Inventario controlado mediante Ansible.
 
-En un entorno productivo se recomienda:
+En un entorno de producción se recomienda:
 
 - Ansible Vault.
 - Gestión centralizada de secretos.
 - MFA.
-- Control de acceso basado en roles.
+- RBAC.
 - Principio de mínimo privilegio.
+- Rotación de credenciales.
 
 ---
 
-## Limitaciones actuales
+# Limitaciones actuales
 
 Los contenedores Docker son efímeros.
 
@@ -354,51 +505,25 @@ docker compose down
 docker compose up -d --build
 ```
 
-los contenedores serán recreados y se perderán:
+se perderá la configuración aplicada dentro de los contenedores, incluyendo:
 
-- Claves SSH configuradas manualmente.
-- Configuración de sudo aplicada mediante Ansible.
+- Claves SSH añadidas manualmente.
+- Cambios realizados mediante Ansible.
+- Configuración sudo.
 
-Será necesario ejecutar nuevamente el proceso de bootstrap.
-
----
-
-## Roadmap
-
-### Completado
-
-- [x] Laboratorio Docker.
-- [x] Servidores SSH.
-- [x] Inventario dinámico con Python.
-- [x] Roles Ansible.
-- [x] Despliegue de Nginx.
-- [x] SSH por claves.
-- [x] CLI de administración labctl.
-
-### Próximamente
-
-- [ ] GitHub Actions.
-- [ ] CI/CD.
-- [ ] Tests automáticos.
-- [ ] Linting.
-- [ ] Prometheus.
-- [ ] Grafana.
-- [ ] Traefik.
-- [ ] DevSecOps.
-- [ ] Monitoreo centralizado.
-- [ ] Gestión de secretos con Ansible Vault.
+Será necesario repetir el proceso de bootstrap.
 
 ---
 
-## Autor
+# Roadmap
 
-Proyecto desarrollado como laboratorio práctico de aprendizaje DevOps para demostrar habilidades en:
+## Completado
 
-- Linux
-- Docker
-- Python
-- SSH
-- Ansible
-- Automatización
-- Infraestructura como Código
-- CI/CD
+- [x] Infraestructura Docker
+- [x] Servidores SSH
+- [x] Inventario dinámico
+- [x] Automatización con Python
+- [x] Roles Ansible
+- [x] Nginx
+- [x] SSH Keys
+- [x] Sudo
