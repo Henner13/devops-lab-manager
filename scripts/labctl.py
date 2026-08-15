@@ -116,7 +116,7 @@ Grafana:
 http://localhost:3000
 """)
 
-    
+
 def restart_monitoring():
     subprocess.run([
         "docker-compose",
