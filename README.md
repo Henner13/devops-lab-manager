@@ -517,13 +517,28 @@ Será necesario repetir el proceso de bootstrap.
 
 # Roadmap
 
-## Completado
+### Completado
 
-- [x] Infraestructura Docker
+- [x] Laboratorio Docker
 - [x] Servidores SSH
 - [x] Inventario dinámico
-- [x] Automatización con Python
 - [x] Roles Ansible
-- [x] Nginx
 - [x] SSH Keys
-- [x] Sudo
+- [x] Nginx
+- [x] GitHub Actions
+- [x] CLI labctl
+- [x] Prometheus
+- [x] Grafana
+- [x] Health Check
+
+### Próximamente
+
+- [ ] Flake8
+- [ ] ansible-lint
+- [ ] yamllint
+- [ ] Traefik
+- [ ] PostgreSQL
+- [ ] Dashboard personalizado Grafana
+- [ ] Ansible Vault
+- [ ] DevSecOps
+- [ ] Despliegue automático
