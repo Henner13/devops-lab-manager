@@ -294,6 +294,8 @@ python3 scripts/labctl.py deploy
 
 # Uso de labctl
 
+Para facilitar su uso se puede crear un alias en `~/.bashrc` o `~/.zshrc` usando `alias labctl="python3 scripts/labctl.py"`
+
 ## Ver ayuda
 
 ```bash

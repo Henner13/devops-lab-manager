@@ -38,8 +38,7 @@ def deploy():
 
 def up():
     subprocess.run([
-        "docker",
-        "compose",
+        "docker-compose",
         "up",
         "-d",
         "--build"
@@ -48,22 +47,19 @@ def up():
 
 def down():
     subprocess.run([
-        "docker",
-        "compose",
+        "docker-compose",
         "down"
     ])
 
 
 def rebuild():
     subprocess.run([
-        "docker",
-        "compose",
+        "docker-compose",
         "down"
     ])
 
     subprocess.run([
-        "docker",
-        "compose",
+        "docker-compose",
         "up",
         "-d",
         "--build"
@@ -120,6 +116,23 @@ Grafana:
 http://localhost:3000
 """)
 
+    
+def restart_monitoring():
+    subprocess.run([
+        "docker-compose",
+        "restart",
+        "prometheus",
+        "grafana",
+        "node-exporter"
+    ])
+
+
+def alerts():
+    subprocess.run([
+        "curl",
+        "http://localhost:9090/api/v1/alerts"
+    ])
+
 
 def help_menu():
     print("""
@@ -159,6 +172,8 @@ commands = {
     "logs": logs,
     "health": health,
     "monitor": monitor,
+    "restart-monitoring": restart_monitoring,
+    "alerts": alerts,
     "help": help_menu
 }
 
