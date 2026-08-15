@@ -1,30 +1,21 @@
 ---
-
 - name: Actualizar cache apt
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
 
 - name: Instalar herramientas base
-  apt:
-    name:
-      - curl
-      - wget
-      - vim
-      - nano
-      - htop
-      - git
-      - unzip
-      - net-tools
+  ansible.builtin.apt:
+    name: "{{ packages_common }}"
     state: present
 
 - name: Crear directorio proyectos
-  file:
+  ansible.builtin.file:
     path: /opt/projects
     state: directory
-    mode: '0755'
+    mode: "0755"
 
-- name: Configurar sudo sin contraseña para devops
-  copy:
+- name: Configurar sudo sin contraseña
+  ansible.builtin.copy:
     dest: /etc/sudoers.d/devops
     content: "devops ALL=(ALL) NOPASSWD:ALL"
-    mode: '0440'
+    mode: "0440"

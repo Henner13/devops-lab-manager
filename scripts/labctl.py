@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def status():
     subprocess.run(["docker", "ps"])
 
@@ -145,6 +146,7 @@ Ejemplos:
   python3 scripts/labctl.py logs server1
 
 """)
+
 
 commands = {
     "up": up,

@@ -1,3 +1,4 @@
+---
 services:
 
   server1:
@@ -26,7 +27,7 @@ services:
       - "2223:22"
     networks:
       - devops-net
-  
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -44,7 +45,7 @@ services:
       - "3000:3000"
     networks:
       - devops-net
-  
+
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
