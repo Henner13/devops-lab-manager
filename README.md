@@ -220,10 +220,7 @@ La primera vez es necesario utilizar autenticación mediante contraseña para co
 ## Configurar claves SSH
 
 ```bash
-ansible-playbook \
--i inventory/hosts.ini \
-ansible/setup_ssh_keys.yml \
--k -K
+ansible-playbook -i inventory/hosts.ini ansible/setup_ssh_keys.yml -k -K
 ```
 
 Contraseña por defecto:
@@ -244,10 +241,7 @@ Parámetros utilizados:
 ## Aplicar configuración base
 
 ```bash
-ansible-playbook \
--i inventory/hosts.ini \
-ansible/site.yml \
--K
+ansible-playbook -i inventory/hosts.ini ansible/site.yml -K
 ```
 
 Esta configuración:
@@ -287,9 +281,7 @@ Una vez completado el bootstrap:
 Despliegue normal:
 
 ```bash
-ansible-playbook \
--i inventory/hosts.ini \
-ansible/site.yml
+ansible-playbook -i inventory/hosts.ini ansible/site.yml
 ```
 
 O mediante:
@@ -443,6 +435,7 @@ Credenciales iniciales:
 Usuario: admin
 Contraseña: admin
 ```
+Después nos pedirá que las cambiemos.
 
 ## Componentes monitorizados
 
