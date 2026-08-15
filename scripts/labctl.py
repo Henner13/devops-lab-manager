@@ -109,6 +109,17 @@ def health():
         print("\n[ERROR] inventory/hosts.ini no encontrado")
 
 
+def monitor():
+
+    print("""
+Prometheus:
+http://localhost:9090
+
+Grafana:
+http://localhost:3000
+""")
+
+
 def help_menu():
     print("""
 Comandos disponibles:
@@ -122,7 +133,9 @@ Comandos disponibles:
   deploy      Ejecutar site.yml
   logs        Ver logs de un contenedor
   health      Estado del laboratorio
+  monitor     Mostrar URLs de monitorización
   help        Mostrar ayuda
+
 
 Ejemplos:
 
@@ -130,6 +143,7 @@ Ejemplos:
   python3 scripts/labctl.py ping
   python3 scripts/labctl.py deploy
   python3 scripts/labctl.py logs server1
+
 """)
 
 commands = {
@@ -142,6 +156,7 @@ commands = {
     "deploy": deploy,
     "logs": logs,
     "health": health,
+    "monitor": monitor,
     "help": help_menu
 }
 
