@@ -64,7 +64,7 @@ services:
       - "9100:9100"
     networks:
       - devops-net
-  
+
   traefik:
     image: traefik:v2.11
     container_name: traefik
