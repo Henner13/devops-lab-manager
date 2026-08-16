@@ -1,6 +1,6 @@
 # DevOps Lab Manager
 
-Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, infraestructura como código (IaC), observabilidad y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
+Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, Infraestructura como Código (IaC), observabilidad, monitorización y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
 
 ---
 
@@ -72,7 +72,7 @@ Linux Mint
 ## Infraestructura
 
 - Laboratorio reproducible mediante Docker Compose.
-- Tres servidores Ubuntu accesibles por SSH.
+- Tres servidores Linux accesibles por SSH.
 - Red Docker dedicada.
 - Configuración centralizada mediante Ansible.
 
@@ -88,6 +88,7 @@ Linux Mint
 - Recolección de métricas mediante Node Exporter.
 - Almacenamiento de métricas en Prometheus.
 - Visualización mediante Grafana.
+- Alertas básicas mediante Prometheus Rules.
 
 ## Integración Continua
 
@@ -95,7 +96,7 @@ Linux Mint
 - Verificación de sintaxis Python.
 - Verificación de Docker Compose.
 - Verificación de Ansible.
-- Validación de la CLI personalizada.
+- Validación de calidad del código.
 
 ---
 
@@ -121,7 +122,11 @@ devops-lab-manager/
 │   │   │   └── tasks/
 │   │   │       └── main.yml
 │   │   │
-│   │   └── setup_ssh_keys/
+│   │   ├── setup_ssh_keys/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   │
+│   │   └── node_exporter/
 │   │       └── tasks/
 │   │           └── main.yml
 │   │
@@ -136,7 +141,8 @@ devops-lab-manager/
 │
 ├── monitoring/
 │   └── prometheus/
-│       └── prometheus.yml
+│       ├── prometheus.yml
+│       └── alerts.yml
 │
 ├── scripts/
 │   ├── generate_inventory.py
@@ -144,6 +150,9 @@ devops-lab-manager/
 │
 ├── tests/
 │
+├── requirements-dev.txt
+├── .flake8
+├── .yamllint.yml
 ├── docker-compose.yml
 ├── README.md
 └── .gitignore
@@ -162,6 +171,28 @@ devops-lab-manager/
 
 ---
 
+# Entorno virtual Python
+
+Se recomienda utilizar un entorno virtual para el desarrollo:
+
+```bash
+python3 -m venv .venv
+```
+
+Activar:
+
+```bash
+source .venv/bin/activate
+```
+
+Instalar dependencias:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+---
+
 # Despliegue inicial
 
 ## Clonar el repositorio
@@ -174,7 +205,7 @@ cd devops-lab-manager
 
 ---
 
-## Levantar la infraestructura
+## Levantar infraestructura
 
 ```bash
 docker compose up -d --build
@@ -229,7 +260,7 @@ Contraseña por defecto:
 devops123
 ```
 
-Parámetros utilizados:
+Parámetros:
 
 ```text
 -k = Solicitar contraseña SSH
@@ -246,8 +277,9 @@ ansible-playbook -i inventory/hosts.ini ansible/site.yml -K
 
 Esta configuración:
 
-- Instala herramientas de administración.
+- Instala herramientas base.
 - Configura Nginx.
+- Configura Node Exporter.
 - Configura sudo sin contraseña.
 - Despliega los roles del laboratorio.
 
@@ -273,93 +305,117 @@ root
 
 # Operación normal
 
-Una vez completado el bootstrap:
+Una vez completado el bootstrap inicial:
 
 - Ya no es necesario usar `-k`.
 - Ya no es necesario usar `-K`.
 
-Despliegue normal:
+Ejecutar despliegue:
 
 ```bash
 ansible-playbook -i inventory/hosts.ini ansible/site.yml
 ```
 
-O mediante:
+o:
 
 ```bash
-python3 scripts/labctl.py deploy
+labctl deploy
 ```
 
 ---
 
 # Uso de labctl
 
-Para facilitar su uso se puede crear un alias en `~/.bashrc` o `~/.zshrc` usando `alias labctl="python3 scripts/labctl.py"`
-
-## Ver ayuda
+Se recomienda crear un alias:
 
 ```bash
-python3 scripts/labctl.py help
+alias labctl="python3 scripts/labctl.py"
 ```
 
-## Levantar infraestructura
+Añadirlo a:
 
 ```bash
-python3 scripts/labctl.py up
+~/.bashrc
 ```
 
-## Apagar infraestructura
+o:
 
 ```bash
-python3 scripts/labctl.py down
+~/.zshrc
 ```
 
-## Reconstruir infraestructura
+Aplicar cambios:
 
 ```bash
-python3 scripts/labctl.py rebuild
+source ~/.bashrc
 ```
 
-## Mostrar contenedores
+---
+
+## Mostrar ayuda
 
 ```bash
-python3 scripts/labctl.py status
+labctl help
+```
+
+## Levantar laboratorio
+
+```bash
+labctl up
+```
+
+## Apagar laboratorio
+
+```bash
+labctl down
+```
+
+## Reconstruir laboratorio
+
+```bash
+labctl rebuild
+```
+
+## Estado de contenedores
+
+```bash
+labctl status
 ```
 
 ## Generar inventario
 
 ```bash
-python3 scripts/labctl.py inventory
+labctl inventory
 ```
 
 ## Comprobar conectividad Ansible
 
 ```bash
-python3 scripts/labctl.py ping
+labctl ping
 ```
 
 ## Ejecutar despliegue
 
 ```bash
-python3 scripts/labctl.py deploy
+labctl deploy
 ```
 
-## Comprobar salud del laboratorio
+## Health Check
 
 ```bash
-python3 scripts/labctl.py health
+labctl health
 ```
 
-## Ver logs
+## Logs
 
 ```bash
-python3 scripts/labctl.py logs server1
+labctl logs server1
 ```
 
-## Mostrar URLs de monitorización
+## URLs de monitorización
 
 ```bash
-python3 scripts/labctl.py monitor
+labctl monitor
 ```
 
 ---
@@ -395,7 +451,7 @@ Configura:
 - Herramientas básicas.
 - Directorios de trabajo.
 - Configuración común.
-- Sudo sin contraseña.
+- Configuración sudo.
 
 ## nginx
 
@@ -411,6 +467,14 @@ Configura:
 - Claves públicas autorizadas.
 - Acceso SSH mediante claves.
 
+## node_exporter
+
+Configura:
+
+- Descarga de Node Exporter.
+- Instalación del binario.
+- Configuración para monitorización.
+
 ---
 
 # Monitorización
@@ -423,6 +487,34 @@ Disponible en:
 http://localhost:9090
 ```
 
+### Consultas útiles
+
+```promql
+up
+```
+
+```promql
+node_cpu_seconds_total
+```
+
+```promql
+node_memory_MemAvailable_bytes
+```
+
+### Reglas
+
+```text
+http://localhost:9090/rules
+```
+
+### Alertas
+
+```text
+http://localhost:9090/alerts
+```
+
+---
+
 ## Grafana
 
 Disponible en:
@@ -430,19 +522,33 @@ Disponible en:
 ```text
 http://localhost:3000
 ```
-Configurar datasource:
-En URL ponemos: `http://prometheus:9090`
 
-Dashboard:
-En mi caso importe el Dashboard 1860
-
-Credenciales iniciales:
+### Credenciales iniciales
 
 ```text
 Usuario: admin
 Contraseña: admin
 ```
-Después nos pedirá que las cambiemos.
+
+Grafana solicitará cambiar la contraseña en el primer acceso.
+
+### Configurar Prometheus como Data Source
+
+URL:
+
+```text
+http://prometheus:9090
+```
+
+### Dashboard utilizado
+
+```text
+1860
+```
+
+Node Exporter Full Dashboard.
+
+---
 
 ## Componentes monitorizados
 
@@ -450,8 +556,55 @@ Después nos pedirá que las cambiemos.
 - Memoria
 - Disco
 - Red
+- Load Average
 - Procesos
 - Uptime
+
+---
+
+# Alertas
+
+Actualmente el laboratorio incluye alertas básicas mediante Prometheus.
+
+## HostDown
+
+Se dispara cuando un objetivo deja de responder durante más de un minuto.
+
+Ver reglas:
+
+```text
+http://localhost:9090/rules
+```
+
+Ver alertas:
+
+```text
+http://localhost:9090/alerts
+```
+
+---
+
+# Calidad del código
+
+El proyecto incorpora herramientas de calidad para detectar errores automáticamente.
+
+## Flake8
+
+```bash
+flake8 scripts
+```
+
+## yamllint
+
+```bash
+yamllint .
+```
+
+## ansible-lint
+
+```bash
+ansible-lint ansible/site.yml
+```
 
 ---
 
@@ -467,10 +620,13 @@ Workflow:
 
 ## Validaciones realizadas
 
-- Validación de sintaxis Python.
+- Compilación de scripts Python.
 - Validación de Docker Compose.
 - Validación de playbooks Ansible.
-- Validación de la CLI `labctl`.
+- Flake8.
+- yamllint.
+- ansible-lint.
+- Test básico de la CLI `labctl`.
 
 ---
 
@@ -483,14 +639,14 @@ Actualmente el laboratorio utiliza:
 - Sudo sin contraseña para automatización.
 - Inventario controlado mediante Ansible.
 
-En un entorno de producción se recomienda:
+En producción se recomienda:
 
 - Ansible Vault.
 - Gestión centralizada de secretos.
 - MFA.
 - RBAC.
-- Principio de mínimo privilegio.
 - Rotación de credenciales.
+- Principio de mínimo privilegio.
 
 ---
 
@@ -505,19 +661,19 @@ docker compose down
 docker compose up -d --build
 ```
 
-se perderá la configuración aplicada dentro de los contenedores, incluyendo:
+será necesario repetir parte del bootstrap ya que se perderá la configuración aplicada dentro de los contenedores.
 
-- Claves SSH añadidas manualmente.
-- Cambios realizados mediante Ansible.
+Entre otros elementos:
+
+- Claves SSH.
 - Configuración sudo.
-
-Será necesario repetir el proceso de bootstrap.
+- Cambios realizados manualmente en los servidores.
 
 ---
 
 # Roadmap
 
-### Completado
+## Completado
 
 - [x] Laboratorio Docker
 - [x] Servidores SSH
@@ -525,20 +681,47 @@ Será necesario repetir el proceso de bootstrap.
 - [x] Roles Ansible
 - [x] SSH Keys
 - [x] Nginx
-- [x] GitHub Actions
-- [x] CLI labctl
+- [x] Node Exporter
 - [x] Prometheus
 - [x] Grafana
+- [x] Alertas básicas Prometheus
+- [x] GitHub Actions
+- [x] Flake8
+- [x] yamllint
+- [x] ansible-lint
+- [x] CLI labctl
 - [x] Health Check
 
-### Próximamente
+## Próximamente
 
-- [ ] Flake8
-- [ ] ansible-lint
-- [ ] yamllint
-- [ ] Traefik
+- [ ] Traefik Reverse Proxy
+- [ ] Alertmanager
+- [ ] Notificaciones Telegram
+- [ ] Notificaciones Discord
+- [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
-- [ ] Dashboard personalizado Grafana
 - [ ] Ansible Vault
 - [ ] DevSecOps
-- [ ] Despliegue automático
+- [ ] Despliegue automático con GitHub Actions
+- [ ] Multi-host deployment
+- [ ] Gestión avanzada de secretos
+
+---
+
+# Autor
+
+Proyecto desarrollado como laboratorio práctico para reforzar conocimientos de:
+
+- Linux
+- Docker
+- Docker Compose
+- SSH
+- Python
+- Ansible
+- GitHub Actions
+- Observabilidad
+- Automatización
+- Infraestructura como Código
+- CI/CD
+- DevOps
+- DevSecOps
