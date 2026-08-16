@@ -1,6 +1,6 @@
 # DevOps Lab Manager
 
-Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, Infraestructura como Código (IaC), observabilidad, monitorización y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
+Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, Infraestructura como Código (IaC), observabilidad, monitorización, gestión de alertas y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
 
 ---
 
@@ -13,6 +13,7 @@ Laboratorio DevOps desarrollado para practicar automatización, administración 
 - Crear herramientas propias de automatización.
 - Implementar integración continua con GitHub Actions.
 - Incorporar observabilidad y monitorización.
+- Gestionar alertas de forma centralizada.
 - Aplicar buenas prácticas DevOps y DevSecOps.
 
 ---
@@ -42,9 +43,13 @@ Linux Mint
         │
         ▼
  Monitoring Stack
+ ├── Node Exporter
  ├── Prometheus
- ├── Grafana
- └── Node Exporter
+ ├── Alertmanager
+ └── Grafana
+        │
+        ▼
+     Telegram
 ```
 
 ---
@@ -61,6 +66,7 @@ Linux Mint
 - GitHub
 - GitHub Actions
 - Prometheus
+- Alertmanager
 - Grafana
 - Node Exporter
 - YAML
@@ -87,16 +93,17 @@ Linux Mint
 
 - Recolección de métricas mediante Node Exporter.
 - Almacenamiento de métricas en Prometheus.
-- Visualización mediante Grafana.
-- Alertas básicas mediante Prometheus Rules.
+- Dashboards mediante Grafana.
+- Health Checks.
+- Alertas automáticas.
 
 ## Integración Continua
 
-- Validación automática con GitHub Actions.
-- Verificación de sintaxis Python.
-- Verificación de Docker Compose.
-- Verificación de Ansible.
-- Validación de calidad del código.
+- Validación automática mediante GitHub Actions.
+- Flake8.
+- yamllint.
+- ansible-lint.
+- Comprobación de la CLI personalizada.
 
 ---
 
@@ -122,11 +129,11 @@ devops-lab-manager/
 │   │   │   └── tasks/
 │   │   │       └── main.yml
 │   │   │
-│   │   ├── setup_ssh_keys/
+│   │   ├── node_exporter/
 │   │   │   └── tasks/
 │   │   │       └── main.yml
 │   │   │
-│   │   └── node_exporter/
+│   │   └── setup_ssh_keys/
 │   │       └── tasks/
 │   │           └── main.yml
 │   │
@@ -140,9 +147,12 @@ devops-lab-manager/
 │   └── hosts.ini
 │
 ├── monitoring/
-│   └── prometheus/
-│       ├── prometheus.yml
-│       └── alerts.yml
+│   ├── prometheus/
+│   │   ├── prometheus.yml
+│   │   └── alerts.yml
+│   │
+│   └── alertmanager/
+│       └── alertmanager.yml
 │
 ├── scripts/
 │   ├── generate_inventory.py
@@ -173,7 +183,7 @@ devops-lab-manager/
 
 # Entorno virtual Python
 
-Se recomienda utilizar un entorno virtual para el desarrollo:
+Crear entorno virtual:
 
 ```bash
 python3 -m venv .venv
@@ -195,7 +205,7 @@ pip install -r requirements-dev.txt
 
 # Despliegue inicial
 
-## Clonar el repositorio
+## Clonar repositorio
 
 ```bash
 git clone https://github.com/TU-USUARIO/devops-lab-manager.git
@@ -225,6 +235,7 @@ server2
 server3
 prometheus
 grafana
+alertmanager
 node-exporter
 ```
 
@@ -246,8 +257,6 @@ inventory/hosts.ini
 
 # Bootstrap inicial
 
-La primera vez es necesario utilizar autenticación mediante contraseña para configurar el laboratorio.
-
 ## Configurar claves SSH
 
 ```bash
@@ -258,13 +267,6 @@ Contraseña por defecto:
 
 ```text
 devops123
-```
-
-Parámetros:
-
-```text
--k = Solicitar contraseña SSH
--K = Solicitar contraseña sudo
 ```
 
 ---
@@ -281,36 +283,13 @@ Esta configuración:
 - Configura Nginx.
 - Configura Node Exporter.
 - Configura sudo sin contraseña.
-- Despliega los roles del laboratorio.
-
----
-
-## Verificar sudo sin contraseña
-
-```bash
-ssh devops@localhost -p 2221
-```
-
-```bash
-sudo whoami
-```
-
-Resultado esperado:
-
-```text
-root
-```
+- Configura los componentes necesarios para el laboratorio.
 
 ---
 
 # Operación normal
 
-Una vez completado el bootstrap inicial:
-
-- Ya no es necesario usar `-k`.
-- Ya no es necesario usar `-K`.
-
-Ejecutar despliegue:
+Una vez finalizado el bootstrap:
 
 ```bash
 ansible-playbook -i inventory/hosts.ini ansible/site.yml
@@ -332,19 +311,7 @@ Se recomienda crear un alias:
 alias labctl="python3 scripts/labctl.py"
 ```
 
-Añadirlo a:
-
-```bash
-~/.bashrc
-```
-
-o:
-
-```bash
-~/.zshrc
-```
-
-Aplicar cambios:
+Aplicar:
 
 ```bash
 source ~/.bashrc
@@ -358,19 +325,19 @@ source ~/.bashrc
 labctl help
 ```
 
-## Levantar laboratorio
+## Levantar entorno
 
 ```bash
 labctl up
 ```
 
-## Apagar laboratorio
+## Apagar entorno
 
 ```bash
 labctl down
 ```
 
-## Reconstruir laboratorio
+## Reconstruir entorno
 
 ```bash
 labctl rebuild
@@ -382,19 +349,19 @@ labctl rebuild
 labctl status
 ```
 
-## Generar inventario
+## Inventario dinámico
 
 ```bash
 labctl inventory
 ```
 
-## Comprobar conectividad Ansible
+## Ansible Ping
 
 ```bash
 labctl ping
 ```
 
-## Ejecutar despliegue
+## Desplegar
 
 ```bash
 labctl deploy
@@ -451,7 +418,7 @@ Configura:
 - Herramientas básicas.
 - Directorios de trabajo.
 - Configuración común.
-- Configuración sudo.
+- Sudo sin contraseña.
 
 ## nginx
 
@@ -463,16 +430,15 @@ Configura:
 
 Configura:
 
+- Claves SSH.
 - Directorio `.ssh`.
-- Claves públicas autorizadas.
-- Acceso SSH mediante claves.
+- Authorized Keys.
 
 ## node_exporter
 
 Configura:
 
-- Descarga de Node Exporter.
-- Instalación del binario.
+- Instalación de Node Exporter.
 - Configuración para monitorización.
 
 ---
@@ -485,20 +451,6 @@ Disponible en:
 
 ```text
 http://localhost:9090
-```
-
-### Consultas útiles
-
-```promql
-up
-```
-
-```promql
-node_cpu_seconds_total
-```
-
-```promql
-node_memory_MemAvailable_bytes
 ```
 
 ### Reglas
@@ -530,17 +482,23 @@ Usuario: admin
 Contraseña: admin
 ```
 
-Grafana solicitará cambiar la contraseña en el primer acceso.
+Tras el primer acceso Grafana solicitará cambiar la contraseña.
 
-### Configurar Prometheus como Data Source
+---
 
-URL:
+### Data Source
+
+Prometheus:
 
 ```text
 http://prometheus:9090
 ```
 
-### Dashboard utilizado
+---
+
+### Dashboard
+
+Dashboard utilizado:
 
 ```text
 1860
@@ -550,43 +508,97 @@ Node Exporter Full Dashboard.
 
 ---
 
-## Componentes monitorizados
+## Métricas monitorizadas
 
 - CPU
 - Memoria
 - Disco
 - Red
-- Load Average
 - Procesos
 - Uptime
+- Load Average
 
 ---
 
-# Alertas
+# Alertmanager
 
-Actualmente el laboratorio incluye alertas básicas mediante Prometheus.
+Alertmanager centraliza y gestiona las alertas generadas por Prometheus.
 
-## HostDown
-
-Se dispara cuando un objetivo deja de responder durante más de un minuto.
-
-Ver reglas:
+Disponible en:
 
 ```text
-http://localhost:9090/rules
+http://localhost:9093
 ```
 
-Ver alertas:
+Arquitectura:
 
 ```text
-http://localhost:9090/alerts
+Node Exporter
+      │
+      ▼
+ Prometheus
+      │
+      ▼
+ Alertmanager
+      │
+      ▼
+   Telegram
 ```
+
+---
+
+# Telegram Notifications
+
+El laboratorio permite enviar alertas directamente a Telegram.
+
+Ejemplo:
+
+```text
+🚨 DevOps Lab
+
+Alerta:
+HostDown
+
+Estado:
+firing
+```
+
+---
+
+## Estado actual
+
+Actualmente la configuración utiliza un fichero local:
+
+```text
+monitoring/alertmanager/alertmanager.yml
+```
+
+que contiene:
+
+- Bot Token
+- Chat ID
+
+Esto simplifica el aprendizaje inicial y facilita las pruebas.
+
+---
+
+## Mejora planificada
+
+En futuras versiones se migrará a una solución más profesional basada en:
+
+- Variables de entorno.
+- Templates.
+- Ansible Vault.
+
+Objetivos:
+
+- No almacenar secretos en texto plano.
+- Evitar exponer credenciales en GitHub.
+- Aplicar buenas prácticas DevSecOps.
 
 ---
 
 # Calidad del código
-
-El proyecto incorpora herramientas de calidad para detectar errores automáticamente.
 
 ## Flake8
 
@@ -610,23 +622,20 @@ ansible-lint ansible/site.yml
 
 # GitHub Actions
 
-El proyecto utiliza integración continua mediante GitHub Actions.
-
 Workflow:
 
 ```text
 .github/workflows/ci.yml
 ```
 
-## Validaciones realizadas
+Validaciones automáticas:
 
-- Compilación de scripts Python.
-- Validación de Docker Compose.
-- Validación de playbooks Ansible.
+- Python Compile.
+- Docker Compose Validation.
 - Flake8.
 - yamllint.
 - ansible-lint.
-- Test básico de la CLI `labctl`.
+- Validación de labctl.
 
 ---
 
@@ -637,37 +646,32 @@ Actualmente el laboratorio utiliza:
 - Claves SSH Ed25519.
 - Usuario dedicado `devops`.
 - Sudo sin contraseña para automatización.
-- Inventario controlado mediante Ansible.
+- Alertas centralizadas.
+- Validaciones automáticas en CI.
 
 En producción se recomienda:
 
 - Ansible Vault.
-- Gestión centralizada de secretos.
 - MFA.
-- RBAC.
 - Rotación de credenciales.
+- Gestión centralizada de secretos.
+- RBAC.
 - Principio de mínimo privilegio.
 
 ---
 
 # Limitaciones actuales
 
-Los contenedores Docker son efímeros.
+Los contenedores son efímeros.
 
-Si se ejecuta:
+Tras ejecutar:
 
 ```bash
 docker compose down
 docker compose up -d --build
 ```
 
-será necesario repetir parte del bootstrap ya que se perderá la configuración aplicada dentro de los contenedores.
-
-Entre otros elementos:
-
-- Claves SSH.
-- Configuración sudo.
-- Cambios realizados manualmente en los servidores.
+puede ser necesario repetir tareas de bootstrap debido a la pérdida de configuraciones internas.
 
 ---
 
@@ -684,7 +688,9 @@ Entre otros elementos:
 - [x] Node Exporter
 - [x] Prometheus
 - [x] Grafana
-- [x] Alertas básicas Prometheus
+- [x] Alertas Prometheus
+- [x] Alertmanager
+- [x] Notificaciones Telegram
 - [x] GitHub Actions
 - [x] Flake8
 - [x] yamllint
@@ -694,13 +700,11 @@ Entre otros elementos:
 
 ## Próximamente
 
-- [ ] Traefik Reverse Proxy
-- [ ] Alertmanager
-- [ ] Notificaciones Telegram
-- [ ] Notificaciones Discord
+- [ ] Gestión segura de secretos con Ansible Vault
+- [ ] Migración de Telegram a variables de entorno
 - [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
-- [ ] Ansible Vault
+- [ ] Traefik Reverse Proxy
 - [ ] DevSecOps
 - [ ] Despliegue automático con GitHub Actions
 - [ ] Multi-host deployment
@@ -720,6 +724,7 @@ Proyecto desarrollado como laboratorio práctico para reforzar conocimientos de:
 - Ansible
 - GitHub Actions
 - Observabilidad
+- Monitorización
 - Automatización
 - Infraestructura como Código
 - CI/CD

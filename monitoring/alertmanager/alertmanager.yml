@@ -2,7 +2,21 @@
 global:
 
 route:
-  receiver: default
+  receiver: telegram
 
 receivers:
-  - name: default
+  - name: telegram
+
+    telegram_configs:
+      - bot_token: "8477690615:AAHFU8NhfDuZ38kEuskIhcohNdYVKMinBY0"
+
+        chat_id: 7939143373
+
+        message: |
+          🚨 Alerta DevOps Lab
+
+          Alerta:
+          {{ .GroupLabels.alertname }}
+
+          Estado:
+          {{ .Status }}

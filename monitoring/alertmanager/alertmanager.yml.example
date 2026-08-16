@@ -1,0 +1,10 @@
+---
+route:
+  receiver: telegram
+
+receivers:
+  - name: telegram
+
+    telegram_configs:
+      - bot_token: "TU_TOKEN"
+        chat_id: 123456789
