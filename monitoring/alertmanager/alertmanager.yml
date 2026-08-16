@@ -8,9 +8,9 @@ receivers:
   - name: telegram
 
     telegram_configs:
-      - bot_token: "8477690615:AAHFU8NhfDuZ38kEuskIhcohNdYVKMinBY0"
+      - bot_token: "TOKEN"
 
-        chat_id: 7939143373
+        chat_id: Tu_id
 
         message: |
           🚨 Alerta DevOps Lab
