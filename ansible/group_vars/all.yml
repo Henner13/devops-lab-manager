@@ -1,0 +1,12 @@
+---
+admin_user: devops
+
+packages_common:
+  - curl
+  - wget
+  - vim
+  - nano
+  - htop
+  - git
+  - unzip
+  - net-tools

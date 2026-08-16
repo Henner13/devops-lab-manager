@@ -430,6 +430,9 @@ Disponible en:
 ```text
 http://localhost:3000
 ```
+Configurar datasource:
+En URL ponemos: `http://prometheus:9090`
+
 Dashboard:
 En mi caso importe el Dashboard 1860
 

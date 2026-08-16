@@ -1,0 +1,19 @@
+---
+- name: Descargar Node Exporter
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz
+    dest: /tmp/node_exporter.tar.gz
+    mode: '0644'
+
+- name: Extraer Node Exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp
+    remote_src: true
+
+- name: Copiar binario
+  copy:
+    src: /tmp/node_exporter-1.9.1.linux-amd64/node_exporter
+    dest: /usr/local/bin/node_exporter
+    mode: '0755'
+    remote_src: true

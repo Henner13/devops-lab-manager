@@ -7,3 +7,4 @@
     - common
     - nginx
     - setup_ssh_keys
+    - node_exporter
