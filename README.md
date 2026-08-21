@@ -208,7 +208,7 @@ pip install -r requirements-dev.txt
 ## Clonar repositorio
 
 ```bash
-git clone https://github.com/TU-USUARIO/devops-lab-manager.git
+git clone https://github.com/Henner13/devops-lab-manager.git
 
 cd devops-lab-manager
 ```
