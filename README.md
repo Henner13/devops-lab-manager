@@ -69,6 +69,7 @@ Linux Mint
 - Alertmanager
 - Grafana
 - Node Exporter
+- Trivy
 - YAML
 
 ---
@@ -96,6 +97,7 @@ Linux Mint
 - Dashboards mediante Grafana.
 - Health Checks.
 - Alertas automáticas.
+- Notificaciones automáticas mediante Telegram.
 
 ## Integración Continua
 
@@ -620,14 +622,6 @@ ansible-lint ansible/site.yml
 
 ---
 
-# GitHub Actions
-
-Workflow:
-
-```text
-.github/workflows/ci.yml
-```
-
 Validaciones automáticas:
 
 - Python Compile.
@@ -636,6 +630,11 @@ Validaciones automáticas:
 - yamllint.
 - ansible-lint.
 - Validación de labctl.
+
+Próximamente:
+
+- Trivy Security Scan.
+- Gitleaks Secret Detection.
 
 ---
 
@@ -646,8 +645,9 @@ Actualmente el laboratorio utiliza:
 - Claves SSH Ed25519.
 - Usuario dedicado `devops`.
 - Sudo sin contraseña para automatización.
-- Alertas centralizadas.
-- Validaciones automáticas en CI.
+- Alertas centralizadas mediante Alertmanager.
+- Notificaciones automáticas mediante Telegram.
+- Validaciones automáticas en GitHub Actions.
 
 En producción se recomienda:
 
@@ -658,6 +658,89 @@ En producción se recomienda:
 - RBAC.
 - Principio de mínimo privilegio.
 
+---
+
+## Trivy
+
+El laboratorio incorpora Trivy para realizar análisis de vulnerabilidades sobre imágenes Docker.
+
+Trivy permite detectar:
+
+- Vulnerabilidades conocidas (CVEs).
+- Dependencias vulnerables.
+- Paquetes inseguros.
+- Riesgos de configuración.
+- Problemas de seguridad en imágenes de contenedores.
+
+### Instalación
+
+```bash
+sudo apt install wget apt-transport-https gnupg -y
+
+wget -qO - https://get.trivy.dev/deb/public.key \
+| gpg --dearmor \
+| sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://get.trivy.dev/deb generic main" \
+| sudo tee /etc/apt/sources.list.d/trivy.list
+
+sudo apt update
+
+sudo apt install trivy -y
+```
+
+### Comprobar instalación
+
+```bash
+trivy --version
+```
+
+### Escanear imágenes
+
+Grafana:
+
+```bash
+trivy image grafana/grafana:latest
+```
+
+Prometheus:
+
+```bash
+trivy image prom/prometheus:latest
+```
+
+Alertmanager:
+
+```bash
+trivy image prom/alertmanager:latest
+```
+
+### Niveles de severidad
+
+Los hallazgos se clasifican en:
+
+- CRITICAL
+- HIGH
+- MEDIUM
+- LOW
+- UNKNOWN
+
+### Objetivo
+
+Detectar vulnerabilidades antes de desplegar imágenes en entornos de producción.
+
+### Estado actual
+
+Actualmente Trivy se ejecuta manualmente desde el sistema anfitrión.
+
+### Mejora planificada
+
+Las próximas versiones incorporarán:
+
+- Integración automática en GitHub Actions.
+- Informes de seguridad.
+- Escaneo continuo de imágenes Docker.
+- Primeras capacidades DevSecOps.
 ---
 
 # Limitaciones actuales
@@ -691,6 +774,7 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 - [x] Alertas Prometheus
 - [x] Alertmanager
 - [x] Notificaciones Telegram
+- [x] Trivy
 - [x] GitHub Actions
 - [x] Flake8
 - [x] yamllint
@@ -700,12 +784,13 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 
 ## Próximamente
 
+- [ ] Integración Trivy en GitHub Actions
+- [ ] Gitleaks
 - [ ] Gestión segura de secretos con Ansible Vault
 - [ ] Migración de Telegram a variables de entorno
 - [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
 - [ ] Traefik Reverse Proxy
-- [ ] DevSecOps
 - [ ] Despliegue automático con GitHub Actions
 - [ ] Multi-host deployment
 - [ ] Gestión avanzada de secretos
