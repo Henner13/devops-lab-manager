@@ -776,6 +776,7 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 - [x] Notificaciones Telegram
 - [x] Trivy
 - [x] GitHub Actions
+- [x] Integración de Trivy en GitHub Actions
 - [x] Flake8
 - [x] yamllint
 - [x] ansible-lint
@@ -784,7 +785,6 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 
 ## Próximamente
 
-- [ ] Integración Trivy en GitHub Actions
 - [ ] Gitleaks
 - [ ] Gestión segura de secretos con Ansible Vault
 - [ ] Migración de Telegram a variables de entorno
