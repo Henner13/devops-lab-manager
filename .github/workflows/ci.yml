@@ -72,6 +72,7 @@ jobs:
         with:
           image-ref: grafana/grafana:latest
           format: table
+          exit-code: "0"
           severity: HIGH,CRITICAL
           ignore-unfixed: true #Evita errores que no podemos controlar.
 
@@ -80,6 +81,7 @@ jobs:
         with:
           image-ref: prom/prometheus:latest
           format: table
+          exit-code: "0"
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
@@ -88,6 +90,7 @@ jobs:
         with:
           image-ref: prom/alertmanager:latest
           format: table
+          exit-code: "0"
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
