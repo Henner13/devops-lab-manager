@@ -63,9 +63,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Trivy Scan
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Scan Grafana
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: grafana/grafana:latest
           format: table
           severity: HIGH,CRITICAL
+          ignore-unfixed: true #Evita errores que no podemos controlar.
+
+      - name: Scan Prometheus
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: prom/prometheus:latest
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+
+      - name: Scan Alertmanager
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: prom/alertmanager:latest
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
