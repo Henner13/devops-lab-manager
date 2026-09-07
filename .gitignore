@@ -21,3 +21,6 @@ venv/
 
 # Monitoring
 monitoring/alertmanager/alertmanager.yml
+
+#Vault
+.vault_pass

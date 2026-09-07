@@ -21,7 +21,7 @@ Laboratorio DevOps desarrollado para practicar automatización, administración 
 # Arquitectura
 
 ```text
-Linux Mint
+Linux
 │
 ├── Docker Compose
 │
@@ -39,7 +39,13 @@ Linux Mint
        labctl
         │
         ▼
- GitHub Actions CI
+ GitHub Actions
+        │
+        ├── Flake8
+        ├── yamllint
+        ├── ansible-lint
+        ├── Trivy
+        └── Gitleaks
         │
         ▼
  Monitoring Stack
@@ -70,6 +76,7 @@ Linux Mint
 - Grafana
 - Node Exporter
 - Trivy
+- Gitleaks
 - YAML
 
 ---
@@ -105,6 +112,8 @@ Linux Mint
 - Flake8.
 - yamllint.
 - ansible-lint.
+- Validación de scripts Python.
+- Validación de Docker Compose.
 - Comprobación de la CLI personalizada.
 
 ---
@@ -120,8 +129,8 @@ devops-lab-manager/
 │
 ├── ansible/
 │   ├── group_vars/
-│   │   └── all.yml
-│   │
+│   │   ├──  all.yml
+│   │   └── vault.yml
 │   ├── roles/
 │   │   ├── common/
 │   │   │   └── tasks/
@@ -165,6 +174,7 @@ devops-lab-manager/
 ├── requirements-dev.txt
 ├── .flake8
 ├── .yamllint.yml
+├── ansible.cfg
 ├── docker-compose.yml
 ├── README.md
 └── .gitignore
@@ -629,12 +639,9 @@ Validaciones automáticas:
 - Flake8.
 - yamllint.
 - ansible-lint.
-- Validación de labctl.
-
-Próximamente:
-
 - Trivy Security Scan.
 - Gitleaks Secret Detection.
+- Validación de labctl.
 
 ---
 
@@ -647,6 +654,8 @@ Actualmente el laboratorio utiliza:
 - Sudo sin contraseña para automatización.
 - Alertas centralizadas mediante Alertmanager.
 - Notificaciones automáticas mediante Telegram.
+- Trivy para escaneo de vulnerabilidades.
+- Gitleaks para detección de secretos.
 - Validaciones automáticas en GitHub Actions.
 
 En producción se recomienda:
@@ -741,7 +750,158 @@ Las próximas versiones incorporarán:
 - Informes de seguridad.
 - Escaneo continuo de imágenes Docker.
 - Primeras capacidades DevSecOps.
+
+
+## Gitleaks
+
+El laboratorio incorpora Gitleaks para detectar secretos expuestos accidentalmente en el repositorio.
+
+Permite identificar:
+
+- Tokens.
+- API Keys.
+- Contraseñas.
+- Credenciales.
+- Secretos en commits históricos.
+
+### Instalación
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh \
+| bash
+```
+
+### Ejecutar análisis
+
+```bash
+gitleaks detect
+```
+
+### Objetivo
+
+Evitar que secretos sensibles lleguen a GitHub o queden almacenados en el historial del repositorio.
+
+### Estado actual
+
+Integrado en GitHub Actions para validación automática.
+
+## vault
+
+Almacena información sensible cifrada mediante Ansible Vault.
+
+Ejemplos:
+
+- Tokens de Telegram.
+- Contraseñas.
+- Claves API.
+- Secretos de despliegue.
+- Variables utilizadas por Ansible.
+
+### Editar secretos
+
+```bash
+ansible-vault edit ansible/group_vars/vault.yml
+```
+
+### Ver contenido
+
+```bash
+ansible-vault view ansible/group_vars/vault.yml
+```
+
+### Crear fichero cifrado
+
+```bash
+ansible-vault create ansible/group_vars/vault.yml
+```
+
+### Uso recomendado
+
+No almacenar información sensible en:
+
+- Playbooks.
+- Roles.
+- Archivos `.env` compartidos.
+- Variables en texto plano.
+
+Utilizar Ansible Vault para gestionar secretos de forma segura.
+
+### Ejecutar playbooks con Vault
+
+```bash
+ansible-playbook -i inventory/hosts.ini ansible/site.yml \
+  --ask-vault-pass
+```
 ---
+
+# Gestión de secretos
+
+## Ansible Vault
+
+El laboratorio utiliza Ansible Vault para cifrar información sensible.
+
+Ejemplos:
+
+- Tokens Telegram.
+- API Keys.
+- Contraseñas.
+- Secretos de despliegue.
+
+---
+
+### Crear fichero cifrado
+
+```bash
+ansible-vault encrypt ansible/group_vars/vault.yml
+```
+
+---
+
+### Ver contenido
+
+```bash
+ansible-vault view ansible/group_vars/vault.yml
+```
+
+---
+
+### Editar contenido
+
+```bash
+ansible-vault edit ansible/group_vars/vault.yml
+```
+
+---
+
+### Ejecutar playbooks
+
+```bash
+ansible-playbook -i inventory/hosts.ini ansible/site.yml --ask-vault-pass
+```
+
+### Configuración de Vault
+
+El laboratorio utiliza un fichero de configuración Ansible `ansible.cfg`:
+
+```ini
+[defaults]
+inventory = inventory/hosts.ini
+roles_path = ansible/roles
+vault_password_file = .vault_pass
+```
+
+La contraseña de Vault se almacena localmente en:
+
+```text
+.vault_pass
+```
+
+Este archivo está incluido en `.gitignore` y nunca debe subirse al repositorio. El contenido es el mismo que en `.env.example`
+---
+
+### Objetivo
+
+Evitar almacenar secretos en texto plano dentro del repositorio.
 
 # Limitaciones actuales
 
@@ -775,18 +935,19 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 - [x] Alertmanager
 - [x] Notificaciones Telegram
 - [x] Trivy
-- [x] GitHub Actions
 - [x] Integración de Trivy en GitHub Actions
+- [x] Gitleaks
+- [x] GitHub Actions
 - [x] Flake8
 - [x] yamllint
 - [x] ansible-lint
 - [x] CLI labctl
 - [x] Health Check
+- [x] Gestión segura de secretos con Ansible Vault
 
 ## Próximamente
 
-- [ ] Gitleaks
-- [ ] Gestión segura de secretos con Ansible Vault
+- [ ] Migrar Telegram a Ansible Vault
 - [ ] Migración de Telegram a variables de entorno
 - [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
