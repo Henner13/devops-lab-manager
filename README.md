@@ -194,7 +194,7 @@ devops-lab-manager/
 
 ## Arquitectura visual
 
-![docs/images/architecture.png]
+![Architecture](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/architecture.png)
 
 ---
 
@@ -494,7 +494,7 @@ http://localhost:9090/alerts
 ```
 ## Prometheus-Alerts
 
-![docs/images/prometheus-alerts.png]
+![Prometheus-Alerts](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/prometheus-alerts.png)
 
 ---
 
@@ -545,7 +545,7 @@ Node Exporter Full Dashboard.
 
 ## Grafana Dashboard
 
-![docs/images/grafana-dashboard.png]
+![Grafana-Dashboard](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/grafana-dashboard.png)
 
 ---
 
@@ -573,6 +573,7 @@ Node Exporter
       ▼
    Telegram
 ```
+![Alertmanager](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/alertmanager.png)
 
 ---
 
@@ -591,7 +592,7 @@ HostDown
 Estado:
 firing
 ```
-![docs/images/telegram-alerts.png]
+![Telegram-Alerts](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/telegram-alerts.png)
 
 ## Estado actual
 
@@ -666,7 +667,7 @@ Validaciones automáticas:
 - Validación de labctl.
 
 
-![docs/images/github-actions.png]
+![Github-Actions](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/github-actions.png)
 
 ---
 
