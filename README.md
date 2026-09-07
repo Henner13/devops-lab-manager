@@ -1,6 +1,9 @@
+
 # DevOps Lab Manager
 
-Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, Infraestructura como Código (IaC), observabilidad, monitorización, gestión de alertas y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
+[![CI](https://github.com/Henner13/devops-lab-manager/actions/workflows/ci.yml/badge.svg)]((https://github.com/Henner13/devops-lab-manager/actions/workflows/ci.yml))
+
+Laboratorio DevOps desarrollado para practicar automatización, administración de sistemas, Infraestructura como Código (IaC), observabilidad, monitorización, gestión de alertas, DevSecOps y CI/CD utilizando tecnologías ampliamente empleadas en entornos profesionales.
 
 ---
 
@@ -11,10 +14,11 @@ Laboratorio DevOps desarrollado para practicar automatización, administración 
 - Configurar sistemas mediante Ansible.
 - Utilizar autenticación SSH basada en claves.
 - Crear herramientas propias de automatización.
-- Implementar integración continua con GitHub Actions.
+- Implementar integración continua mediante GitHub Actions.
 - Incorporar observabilidad y monitorización.
 - Gestionar alertas de forma centralizada.
 - Aplicar buenas prácticas DevOps y DevSecOps.
+- Aprender gestión segura de secretos.
 
 ---
 
@@ -106,6 +110,13 @@ Linux
 - Alertas automáticas.
 - Notificaciones automáticas mediante Telegram.
 
+## DevSecOps
+
+- Escaneo de vulnerabilidades mediante Trivy.
+- Detección de secretos mediante Gitleaks.
+- Gestión segura de secretos mediante Ansible Vault.
+- Validaciones automáticas en GitHub Actions.
+
 ## Integración Continua
 
 - Validación automática mediante GitHub Actions.
@@ -129,8 +140,9 @@ devops-lab-manager/
 │
 ├── ansible/
 │   ├── group_vars/
-│   │   ├──  all.yml
+│   │   ├── all.yml
 │   │   └── vault.yml
+│   │
 │   ├── roles/
 │   │   ├── common/
 │   │   │   └── tasks/
@@ -179,6 +191,10 @@ devops-lab-manager/
 ├── README.md
 └── .gitignore
 ```
+
+## Arquitectura visual
+
+![docs/images/architecture.png]
 
 ---
 
@@ -295,13 +311,13 @@ Esta configuración:
 - Configura Nginx.
 - Configura Node Exporter.
 - Configura sudo sin contraseña.
-- Configura los componentes necesarios para el laboratorio.
+- Despliega los roles del laboratorio.
 
 ---
 
 # Operación normal
 
-Una vez finalizado el bootstrap:
+Una vez completado el bootstrap:
 
 ```bash
 ansible-playbook -i inventory/hosts.ini ansible/site.yml
@@ -323,7 +339,7 @@ Se recomienda crear un alias:
 alias labctl="python3 scripts/labctl.py"
 ```
 
-Aplicar:
+Aplicar cambios:
 
 ```bash
 source ~/.bashrc
@@ -373,7 +389,7 @@ labctl inventory
 labctl ping
 ```
 
-## Desplegar
+## Ejecutar despliegue
 
 ```bash
 labctl deploy
@@ -476,6 +492,9 @@ http://localhost:9090/rules
 ```text
 http://localhost:9090/alerts
 ```
+## Prometheus-Alerts
+
+![docs/images/prometheus-alerts.png]
 
 ---
 
@@ -496,8 +515,6 @@ Contraseña: admin
 
 Tras el primer acceso Grafana solicitará cambiar la contraseña.
 
----
-
 ### Data Source
 
 Prometheus:
@@ -505,8 +522,6 @@ Prometheus:
 ```text
 http://prometheus:9090
 ```
-
----
 
 ### Dashboard
 
@@ -518,9 +533,7 @@ Dashboard utilizado:
 
 Node Exporter Full Dashboard.
 
----
-
-## Métricas monitorizadas
+### Métricas monitorizadas
 
 - CPU
 - Memoria
@@ -529,6 +542,10 @@ Node Exporter Full Dashboard.
 - Procesos
 - Uptime
 - Load Average
+
+## Grafana Dashboard
+
+![docs/images/grafana-dashboard.png]
 
 ---
 
@@ -574,8 +591,7 @@ HostDown
 Estado:
 firing
 ```
-
----
+![docs/images/telegram-alerts.png]
 
 ## Estado actual
 
@@ -587,20 +603,18 @@ monitoring/alertmanager/alertmanager.yml
 
 que contiene:
 
-- Bot Token
-- Chat ID
+- Bot Token.
+- Chat ID.
 
 Esto simplifica el aprendizaje inicial y facilita las pruebas.
-
----
 
 ## Mejora planificada
 
 En futuras versiones se migrará a una solución más profesional basada en:
 
-- Variables de entorno.
-- Templates.
 - Ansible Vault.
+- Templates.
+- Gestión centralizada de secretos.
 
 Objetivos:
 
@@ -632,6 +646,14 @@ ansible-lint ansible/site.yml
 
 ---
 
+# GitHub Actions
+
+Workflow:
+
+```text
+.github/workflows/ci.yml
+```
+
 Validaciones automáticas:
 
 - Python Compile.
@@ -642,6 +664,9 @@ Validaciones automáticas:
 - Trivy Security Scan.
 - Gitleaks Secret Detection.
 - Validación de labctl.
+
+
+![docs/images/github-actions.png]
 
 ---
 
@@ -656,11 +681,11 @@ Actualmente el laboratorio utiliza:
 - Notificaciones automáticas mediante Telegram.
 - Trivy para escaneo de vulnerabilidades.
 - Gitleaks para detección de secretos.
+- Ansible Vault para gestión segura de secretos.
 - Validaciones automáticas en GitHub Actions.
 
 En producción se recomienda:
 
-- Ansible Vault.
 - MFA.
 - Rotación de credenciales.
 - Gestión centralizada de secretos.
@@ -669,17 +694,9 @@ En producción se recomienda:
 
 ---
 
-## Trivy
+# Trivy
 
-El laboratorio incorpora Trivy para realizar análisis de vulnerabilidades sobre imágenes Docker.
-
-Trivy permite detectar:
-
-- Vulnerabilidades conocidas (CVEs).
-- Dependencias vulnerables.
-- Paquetes inseguros.
-- Riesgos de configuración.
-- Problemas de seguridad en imágenes de contenedores.
+Trivy permite analizar vulnerabilidades en imágenes Docker.
 
 ### Instalación
 
@@ -694,7 +711,6 @@ echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://get.trivy.dev/deb ge
 | sudo tee /etc/apt/sources.list.d/trivy.list
 
 sudo apt update
-
 sudo apt install trivy -y
 ```
 
@@ -706,19 +722,13 @@ trivy --version
 
 ### Escanear imágenes
 
-Grafana:
-
 ```bash
 trivy image grafana/grafana:latest
 ```
 
-Prometheus:
-
 ```bash
 trivy image prom/prometheus:latest
 ```
-
-Alertmanager:
 
 ```bash
 trivy image prom/alertmanager:latest
@@ -726,35 +736,21 @@ trivy image prom/alertmanager:latest
 
 ### Niveles de severidad
 
-Los hallazgos se clasifican en:
-
 - CRITICAL
 - HIGH
 - MEDIUM
 - LOW
 - UNKNOWN
 
-### Objetivo
-
-Detectar vulnerabilidades antes de desplegar imágenes en entornos de producción.
-
 ### Estado actual
 
-Actualmente Trivy se ejecuta manualmente desde el sistema anfitrión.
+Trivy se ejecuta localmente y también forma parte de la pipeline de GitHub Actions.
 
-### Mejora planificada
+---
 
-Las próximas versiones incorporarán:
+# Gitleaks
 
-- Integración automática en GitHub Actions.
-- Informes de seguridad.
-- Escaneo continuo de imágenes Docker.
-- Primeras capacidades DevSecOps.
-
-
-## Gitleaks
-
-El laboratorio incorpora Gitleaks para detectar secretos expuestos accidentalmente en el repositorio.
+Gitleaks detecta secretos expuestos accidentalmente en el repositorio.
 
 Permite identificar:
 
@@ -767,8 +763,7 @@ Permite identificar:
 ### Instalación
 
 ```bash
-curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh \
-| bash
+curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | bash
 ```
 
 ### Ejecutar análisis
@@ -777,61 +772,10 @@ curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh
 gitleaks detect
 ```
 
-### Objetivo
-
-Evitar que secretos sensibles lleguen a GitHub o queden almacenados en el historial del repositorio.
-
 ### Estado actual
 
-Integrado en GitHub Actions para validación automática.
+Integrado en GitHub Actions para validación automática de código.
 
-## vault
-
-Almacena información sensible cifrada mediante Ansible Vault.
-
-Ejemplos:
-
-- Tokens de Telegram.
-- Contraseñas.
-- Claves API.
-- Secretos de despliegue.
-- Variables utilizadas por Ansible.
-
-### Editar secretos
-
-```bash
-ansible-vault edit ansible/group_vars/vault.yml
-```
-
-### Ver contenido
-
-```bash
-ansible-vault view ansible/group_vars/vault.yml
-```
-
-### Crear fichero cifrado
-
-```bash
-ansible-vault create ansible/group_vars/vault.yml
-```
-
-### Uso recomendado
-
-No almacenar información sensible en:
-
-- Playbooks.
-- Roles.
-- Archivos `.env` compartidos.
-- Variables en texto plano.
-
-Utilizar Ansible Vault para gestionar secretos de forma segura.
-
-### Ejecutar playbooks con Vault
-
-```bash
-ansible-playbook -i inventory/hosts.ini ansible/site.yml \
-  --ask-vault-pass
-```
 ---
 
 # Gestión de secretos
@@ -847,15 +791,11 @@ Ejemplos:
 - Contraseñas.
 - Secretos de despliegue.
 
----
-
 ### Crear fichero cifrado
 
 ```bash
-ansible-vault encrypt ansible/group_vars/vault.yml
+ansible-vault create ansible/group_vars/vault.yml
 ```
-
----
 
 ### Ver contenido
 
@@ -863,49 +803,28 @@ ansible-vault encrypt ansible/group_vars/vault.yml
 ansible-vault view ansible/group_vars/vault.yml
 ```
 
----
-
 ### Editar contenido
 
 ```bash
 ansible-vault edit ansible/group_vars/vault.yml
 ```
 
----
-
 ### Ejecutar playbooks
 
 ```bash
-ansible-playbook -i inventory/hosts.ini ansible/site.yml --ask-vault-pass
+ansible-playbook -i inventory/hosts.ini ansible/site.yml \
+  --ask-vault-pass
 ```
-
-### Configuración de Vault
-
-El laboratorio utiliza un fichero de configuración Ansible `ansible.cfg`:
-
-```ini
-[defaults]
-inventory = inventory/hosts.ini
-roles_path = ansible/roles
-vault_password_file = .vault_pass
-```
-
-La contraseña de Vault se almacena localmente en:
-
-```text
-.vault_pass
-```
-
-Este archivo está incluido en `.gitignore` y nunca debe subirse al repositorio. El contenido es el mismo que en `.env.example`
----
 
 ### Objetivo
 
-Evitar almacenar secretos en texto plano dentro del repositorio.
+Evitar almacenar información sensible en texto plano dentro del repositorio.
+
+---
 
 # Limitaciones actuales
 
-Los contenedores son efímeros.
+Los contenedores Docker son efímeros.
 
 Tras ejecutar:
 
@@ -914,7 +833,7 @@ docker compose down
 docker compose up -d --build
 ```
 
-puede ser necesario repetir tareas de bootstrap debido a la pérdida de configuraciones internas.
+puede ser necesario repetir parte del bootstrap debido a la pérdida de configuraciones internas.
 
 ---
 
@@ -948,11 +867,10 @@ puede ser necesario repetir tareas de bootstrap debido a la pérdida de configur
 ## Próximamente
 
 - [ ] Migrar Telegram a Ansible Vault
-- [ ] Migración de Telegram a variables de entorno
 - [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
 - [ ] Traefik Reverse Proxy
-- [ ] Despliegue automático con GitHub Actions
+- [ ] Despliegue automático mediante GitHub Actions
 - [ ] Multi-host deployment
 - [ ] Gestión avanzada de secretos
 
