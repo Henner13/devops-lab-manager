@@ -3,8 +3,13 @@
   hosts: servers
   become: true
 
+  vars_files:
+    - group_vars/vault.yml
+    - monitoring/alertmanager/alertmanager.yml
+
   roles:
     - common
     - nginx
     - setup_ssh_keys
     - node_exporter
+    - alertmanager

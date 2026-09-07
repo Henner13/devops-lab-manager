@@ -864,10 +864,10 @@ puede ser necesario repetir parte del bootstrap debido a la pérdida de configur
 - [x] CLI labctl
 - [x] Health Check
 - [x] Gestión segura de secretos con Ansible Vault
+- [x] Migrar Telegram a Ansible Vault
 
 ## Próximamente
 
-- [ ] Migrar Telegram a Ansible Vault
 - [ ] Dashboard Grafana personalizado
 - [ ] PostgreSQL
 - [ ] Traefik Reverse Proxy
