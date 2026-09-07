@@ -592,7 +592,7 @@ HostDown
 Estado:
 firing
 ```
-![Telegram-Alerts](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/telegram-alerts.png)
+![Telegram-Alerts](https://github.com/Henner13/devops-lab-manager/blob/main/docs/images/telegram-alert.png)
 
 ## Estado actual
 
